@@ -25,7 +25,6 @@
 *.pch
 *.pdb
 *.res
-*.v11.suo
 *.suo
 *.sdf
 *.opensdf
