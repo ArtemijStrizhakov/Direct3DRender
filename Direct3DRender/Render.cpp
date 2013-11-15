@@ -26,16 +26,14 @@ bool CRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
 
 	m_VB = m_RC.CreateBuffer<VERTEX>(VertexBuffer);
 		
-
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT4( 0.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 0.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT4( 1.0f, 1.0f, 0.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT4( 0.0f, 0.0f, 0.0f, 1.0f ) ));
-
+	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 1.0f, 1.0f ) ));
+	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
 	m_VB->Compile();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -54,16 +52,11 @@ bool CRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
 
 	m_CB = m_RC.CreateBuffer<CONSTANTBUFER>(ConstantBuffer);
 
-	cb.mWorld = XMMatrixIdentity();
-
-	XMVECTOR Eye = XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f );
-	XMVECTOR At = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
-	XMVECTOR Up = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-	cb.mView = XMMatrixLookAtLH( Eye, At, Up );
-
-	cb.mProjection = XMMatrixPerspectiveFovLH( XM_PIDIV2, nWidth / (FLOAT)nHeigth, 0.01f, 100.0f );
+	m_Constants.world = XMMatrixIdentity();
+	m_Constants.view = XMMatrixLookAtLH( XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f ), XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ), XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ) );
+	m_Constants.projection = XMMatrixPerspectiveFovLH( XM_PIDIV2, nWidth / (FLOAT)nHeigth, 0.01f, 100.0f );
 		
-	m_CB->m_Items.push_back(cb);
+	m_CB->m_Items.push_back(m_Constants);
 	
 	m_CB->Compile();
 
@@ -83,17 +76,19 @@ void CRender::Render()
 {
 	static float t = 0.0f;
 	t += ( float )XM_PI * 0.000125f;
-	//
-	// Animate the cube
-	//
-	cb.mWorld = XMMatrixRotationY( t );
+
+	m_Constants.world = XMMatrixRotationY( t );
+
+	m_CB->m_Items[0] = m_Constants.PrepareForBuffer();
+
+	m_CB->Update();
 
 
 	m_RC.Render([this](ID3D11DeviceContext* pContext)
 		{
 			UINT stride = sizeof( VERTEX );
 			UINT offset = 0;
-
+						
 			std::vector<ID3D11Buffer*> buffers;
 			buffers.push_back(m_VB->GetBuffer());
 			ID3D11Buffer *const * ppBuffers = (ID3D11Buffer *const *)buffers.data(); 
@@ -101,12 +96,6 @@ void CRender::Render()
 		
 			pContext->IASetIndexBuffer( m_IB->GetBuffer(), DXGI_FORMAT_R16_UINT, 0 );
 
-		
-			CONSTANTBUFER cb1;
-			cb1.mWorld = XMMatrixTranspose( cb.mWorld );
-			cb1.mView = XMMatrixTranspose( cb.mView );
-			cb1.mProjection = XMMatrixTranspose( cb.mProjection );
-			pContext->UpdateSubresource( m_CB->GetBuffer(), 0, NULL, &cb1, 0, 0 );
 			buffers.clear();
 			buffers.push_back(m_CB->GetBuffer());
 			ppBuffers = (ID3D11Buffer *const *)buffers.data(); 

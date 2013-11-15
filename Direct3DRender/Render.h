@@ -6,22 +6,33 @@
 
 struct VERTEX
 {
-	VERTEX(XMFLOAT3 p, XMFLOAT4 c)
+	VERTEX(XMFLOAT4 p, XMFLOAT4 c)
 		: position(p)
 		, color(c)
 	{
 
 	}
 
-	XMFLOAT3 position;
+	XMFLOAT4 position;
 	XMFLOAT4 color;
 };
 
 struct CONSTANTBUFER
 {
-	XMMATRIX mWorld;
-	XMMATRIX mView;
-	XMMATRIX mProjection;
+	XMMATRIX world;
+	XMMATRIX view;
+	XMMATRIX projection;
+
+	CONSTANTBUFER PrepareForBuffer()
+	{
+		CONSTANTBUFER transposed;
+
+		transposed.world = XMMatrixTranspose( world );
+		transposed.view = XMMatrixTranspose( view );
+		transposed.projection = XMMatrixTranspose( projection );
+
+		return transposed;
+	}
 };
 
 
@@ -44,7 +55,7 @@ protected:
 	CBuffer<WORD>::Ptr m_IB;
 	CBuffer<CONSTANTBUFER>::Ptr m_CB;
 
-	CONSTANTBUFER cb;
+	CONSTANTBUFER m_Constants;
 
 };
 
