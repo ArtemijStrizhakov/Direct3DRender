@@ -11,3 +11,22 @@
 *.lai
 *.la
 *.a
+
+#Solution files
+*.sln
+
+#Binary files
+*.exe
+*.obj
+*.tlog
+*.ilk
+*.lastbuildstate
+*.log
+*.pch
+*.pdb
+*.res
+*.v11.suo
+*.suo
+*.sdf
+*.opensdf
+*.idb
