@@ -47,13 +47,14 @@ public:
 		}
 
 		D3D11_BUFFER_DESC bd = {0};
-		ZeroMemory( &bd, sizeof(bd) );
+		
 		bd.Usage = D3D11_USAGE_DEFAULT;
 		bd.ByteWidth = sizeof( ITEM ) * m_Items.size();
 		bd.BindFlags = (UINT)m_Type;
 		bd.CPUAccessFlags = 0;
-		D3D11_SUBRESOURCE_DATA InitData;
-		ZeroMemory( &InitData, sizeof(InitData) );
+		
+		D3D11_SUBRESOURCE_DATA InitData = {0};
+		
 		InitData.pSysMem = (const void *) m_Items.data();
 
 		HRESULT hr = m_pDevice->CreateBuffer( &bd, &InitData, &m_pBuffer );
@@ -63,6 +64,22 @@ public:
 			DXErrors::ReportError(hr);
 			return false;
 		}
+
+		return true;
+	}
+
+	bool Update()
+	{
+		ID3D11DeviceContext* pContext = nullptr;
+
+		m_pDevice->GetImmediateContext(&pContext);
+
+		if(pContext == nullptr)
+		{
+			return false;
+		}
+
+		pContext->UpdateSubresource(m_pBuffer, 0, NULL, (void*)m_Items.data(), 0, 0);
 
 		return true;
 	}
