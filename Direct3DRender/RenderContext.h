@@ -18,7 +18,7 @@ public:
 
 	BOOL Initialize(HWND hWnd, int nWidth, int nHeigth);
 	void ShutDown();
-	void Render(std::function<void (ID3D11DeviceContext*)> render);
+	void Render(std::function<void (CRenderContext*)> render);
 	
 	
 	CPixelShader::Ptr CreatePixelShader(std::wstring const & shaderPath);
@@ -29,6 +29,14 @@ public:
 	{
 		return std::make_shared<CBuffer<ITEM>>(m_pDevice, type);
 	}
+
+	void SetVertexBuffer(ID3D11Buffer* pBuffer, int nSize);
+	void SetIndexBuffer(ID3D11Buffer* pBuffer);
+	void SetConstantBuffer(ID3D11Buffer* pBuffer);
+	void SetPixelShader(ID3D11PixelShader* pShader);
+	void SetVertexShader(ID3D11VertexShader* pShader, ID3D11InputLayout *pInputLayout);
+
+	ID3D11DeviceContext* GetDeviceContext();
 
 private:
 

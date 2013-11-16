@@ -26,7 +26,7 @@ bool CRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
 
 	m_VB = m_RC.CreateBuffer<VERTEX>(VertexBuffer);
 		
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 1.0f, 1.0f ) ));
+	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
 	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
 	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
 	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
@@ -77,36 +77,28 @@ void CRender::Render()
 	static float t = 0.0f;
 	t += ( float )XM_PI * 0.000125f;
 
-	m_Constants.world = XMMatrixRotationY( t );
+	m_Constants.world = XMMatrixRotationY( t )*XMMatrixRotationX( t*0.5 )*XMMatrixRotationX( t*0.2 );
 
 	m_CB->m_Items[0] = m_Constants.PrepareForBuffer();
 
 	m_CB->Update();
 
 
-	m_RC.Render([this](ID3D11DeviceContext* pContext)
+	m_RC.Render([this](CRenderContext* pContext)
 		{
-			UINT stride = sizeof( VERTEX );
-			UINT offset = 0;
-						
-			std::vector<ID3D11Buffer*> buffers;
-			buffers.push_back(m_VB->GetBuffer());
-			ID3D11Buffer *const * ppBuffers = (ID3D11Buffer *const *)buffers.data(); 
-			pContext->IASetVertexBuffers( 0, buffers.size(), ppBuffers, &stride, &offset );
+			pContext->SetVertexBuffer(m_VB->GetBuffer(), sizeof( VERTEX ));
 		
-			pContext->IASetIndexBuffer( m_IB->GetBuffer(), DXGI_FORMAT_R16_UINT, 0 );
+			pContext->SetIndexBuffer(m_IB->GetBuffer());
+			
+			pContext->SetConstantBuffer(m_CB->GetBuffer());
 
-			buffers.clear();
-			buffers.push_back(m_CB->GetBuffer());
-			ppBuffers = (ID3D11Buffer *const *)buffers.data(); 
-			pContext->VSSetConstantBuffers( 0, 1, ppBuffers );
-
-			pContext->PSSetShader( m_PS->GetShader(), NULL, 0 );
-			pContext->VSSetShader( m_VS->GetShader(), NULL, 0 );
-			pContext->IASetInputLayout( m_VS->GetLayout() );
-
-			pContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-			pContext->DrawIndexed( m_IB->m_Items.size(), 0, 0 );
+			pContext->SetPixelShader(m_PS->GetShader());
+			
+			pContext->SetVertexShader(m_VS->GetShader(), m_VS->GetLayout());
+			
+			pContext->GetDeviceContext()->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+			
+			pContext->GetDeviceContext()->DrawIndexed( m_IB->m_Items.size(), 0, 0 );
 		});
 }
 

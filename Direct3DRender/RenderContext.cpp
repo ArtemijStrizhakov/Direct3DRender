@@ -134,7 +134,7 @@ void CRenderContext::ShutDown()
 }
 
 
-void CRenderContext::Render(std::function<void (ID3D11DeviceContext*)> render)
+void CRenderContext::Render(std::function<void (CRenderContext*)> render)
 {
 	if( m_pImmediateContext == nullptr ||
 		m_pRenderTargetView == nullptr ||
@@ -147,7 +147,7 @@ void CRenderContext::Render(std::function<void (ID3D11DeviceContext*)> render)
 
 	m_pImmediateContext->ClearRenderTargetView( m_pRenderTargetView, ClearColor );
 
-	render(m_pImmediateContext);
+	render(this);
 
 	m_pSwapChain->Present( 0, 0 );
 }
@@ -174,4 +174,45 @@ CVertexShader::Ptr CRenderContext::CreateVertexShader(std::wstring const & shade
 	}
 
 	return shader;
+}
+
+void CRenderContext::SetVertexBuffer( ID3D11Buffer* pBuffer, int nSize )
+{
+	UINT stride = nSize;
+	UINT offset = 0;
+
+	std::vector<ID3D11Buffer*> buffers;
+	buffers.push_back(pBuffer);
+	ID3D11Buffer *const * ppBuffers = (ID3D11Buffer *const *)buffers.data(); 
+	m_pImmediateContext->IASetVertexBuffers( 0, buffers.size(), ppBuffers, &stride, &offset );
+}
+
+void CRenderContext::SetIndexBuffer( ID3D11Buffer* pBuffer )
+{
+	m_pImmediateContext->IASetIndexBuffer( pBuffer, DXGI_FORMAT_R16_UINT, 0 );
+}
+
+void CRenderContext::SetConstantBuffer( ID3D11Buffer* pBuffer )
+{
+	std::vector<ID3D11Buffer*> buffers;
+	buffers.push_back(pBuffer);
+	ID3D11Buffer *const * ppBuffers = (ID3D11Buffer *const *)buffers.data(); 
+	m_pImmediateContext->VSSetConstantBuffers( 0, 1, ppBuffers );
+}
+
+void CRenderContext::SetPixelShader( ID3D11PixelShader* pShader )
+{
+	m_pImmediateContext->PSSetShader( pShader, NULL, 0 );
+}
+
+void CRenderContext::SetVertexShader( ID3D11VertexShader* pShader, ID3D11InputLayout *pInputLayout )
+{
+	m_pImmediateContext->VSSetShader( pShader, NULL, 0 );
+	m_pImmediateContext->IASetInputLayout( pInputLayout );
+
+}
+
+ID3D11DeviceContext* CRenderContext::GetDeviceContext()
+{
+	return m_pImmediateContext;
 }
