@@ -48,14 +48,17 @@ public:
 
 protected:
 
-	CRenderContext m_RC;
-	CPixelShader::Ptr m_PS;
-	CVertexShader::Ptr m_VS;
-	CBuffer<VERTEX>::Ptr m_VB;
-	CBuffer<WORD>::Ptr m_IB;
-	CBuffer<CONSTANTBUFER>::Ptr m_CB;
+	CRenderContext m_RenderContext;
+	CPixelShader::Ptr m_spPixelSader;
+	CVertexShader::Ptr m_spVertexShader;
+	CBuffer<VERTEX>::Ptr m_spVertexBuffer;
+	CBuffer<WORD>::Ptr m_spIndexBuffer;
+	CBuffer<CONSTANTBUFER>::Ptr m_spConstantBuffer;
 
 	CONSTANTBUFER m_Constants;
+	XMMATRIX m_World1;
+	XMMATRIX m_World2;
+
 
 };
 

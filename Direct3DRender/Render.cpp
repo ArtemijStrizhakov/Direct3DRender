@@ -16,89 +16,102 @@ CRender::~CRender()
 
 bool CRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
 {
-	m_RC.Initialize(hWnd, nWidth, nHeigth);
+	m_RenderContext.Initialize(hWnd, nWidth, nHeigth);
 	
-	m_PS = m_RC.CreatePixelShader(L"shaders.fx");
+	m_spPixelSader = m_RenderContext.CreatePixelShader(L"shaders.fx");
 	
-	m_VS = m_RC.CreateVertexShader(L"shaders.fx");
+	m_spVertexShader = m_RenderContext.CreateVertexShader(L"shaders.fx");
 
 	//////////////////////////////////////////////////////////////////////////
 
-	m_VB = m_RC.CreateBuffer<VERTEX>(VertexBuffer);
+	m_spVertexBuffer = m_RenderContext.CreateBuffer<VERTEX>(VertexBuffer);
 		
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_VB->Compile();
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) ));
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) ));
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_spVertexBuffer->Compile();
 
 	//////////////////////////////////////////////////////////////////////////
 
-	m_IB = m_RC.CreateBuffer<WORD>(IndexBuffer);
+	m_spIndexBuffer = m_RenderContext.CreateBuffer<WORD>(IndexBuffer);
 
 	WORD indexes[] = {3,1,0, 2,1,3,	0,5,4, 1,5,0, 3,4,7, 0,4,3, 1,6,5, 2,6,1, 2,7,6, 3,7,2, 6,4,5, 7,4,6,};
 
 	std::vector<WORD> v(indexes, indexes + sizeof(indexes) / sizeof(WORD));
 
-	m_IB->m_Items = v;
+	m_spIndexBuffer->m_Items = v;
 
-	m_IB->Compile();
+	m_spIndexBuffer->Compile();
 
 	//////////////////////////////////////////////////////////////////////////
 
-	m_CB = m_RC.CreateBuffer<CONSTANTBUFER>(ConstantBuffer);
+	m_spConstantBuffer = m_RenderContext.CreateBuffer<CONSTANTBUFER>(ConstantBuffer);
 
-	m_Constants.world = XMMatrixIdentity();
+	m_World1 = XMMatrixIdentity();
+	m_World2 = XMMatrixIdentity();
+
+	m_Constants.world = m_World1;
 	m_Constants.view = XMMatrixLookAtLH( XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f ), XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ), XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ) );
 	m_Constants.projection = XMMatrixPerspectiveFovLH( XM_PIDIV2, nWidth / (FLOAT)nHeigth, 0.01f, 100.0f );
 		
-	m_CB->m_Items.push_back(m_Constants);
+	m_spConstantBuffer->m_Items.push_back(m_Constants);
 	
-	m_CB->Compile();
+	m_spConstantBuffer->Compile();
 
 	return true;
 }
 
 void CRender::ShutDown()
 {
-	m_VB.reset();
-	m_PS.reset();
-	m_VS.reset();
+	m_spVertexBuffer.reset();
+	m_spPixelSader.reset();
+	m_spVertexShader.reset();
 
-	m_RC.ShutDown();
+	m_RenderContext.ShutDown();
 }
 
 void CRender::Render()
 {
 	static float t = 0.0f;
-	t += ( float )XM_PI * 0.000125f;
+	t += ( float )XM_PI * 0.0001f;
 
-	m_Constants.world = XMMatrixRotationY( t )*XMMatrixRotationX( t*0.5 )*XMMatrixRotationX( t*0.2 );
+	m_World1 = XMMatrixRotationY(t);
 
-	m_CB->m_Items[0] = m_Constants.PrepareForBuffer();
-
-	m_CB->Update();
-
-
-	m_RC.Render([this](CRenderContext* pContext)
+	XMMATRIX mSpin = XMMatrixRotationZ( -t );
+	XMMATRIX mOrbit = XMMatrixRotationY( -t * 1.0f );
+	XMMATRIX mTranslate = XMMatrixTranslation( -4.0f, 0.0f, 0.0f );
+	XMMATRIX mScale = XMMatrixScaling( 0.3f, 0.3f, 0.3f );
+	m_World2 = mScale * mSpin * mTranslate * mOrbit;
+	
+	m_RenderContext.Render([this](CRenderContext* pContext)
 		{
-			pContext->SetVertexBuffer(m_VB->GetBuffer(), sizeof( VERTEX ));
+			pContext->SetVertexBuffer(m_spVertexBuffer->GetBuffer(), sizeof( VERTEX ));
 		
-			pContext->SetIndexBuffer(m_IB->GetBuffer());
+			pContext->SetIndexBuffer(m_spIndexBuffer->GetBuffer());
 			
-			pContext->SetConstantBuffer(m_CB->GetBuffer());
+			pContext->SetConstantBuffer(m_spConstantBuffer->GetBuffer());
 
-			pContext->SetPixelShader(m_PS->GetShader());
+			pContext->SetPixelShader(m_spPixelSader->GetShader());
 			
-			pContext->SetVertexShader(m_VS->GetShader(), m_VS->GetLayout());
+			pContext->SetVertexShader(m_spVertexShader->GetShader(), m_spVertexShader->GetLayout());
 			
 			pContext->GetDeviceContext()->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-			
-			pContext->GetDeviceContext()->DrawIndexed( m_IB->m_Items.size(), 0, 0 );
+
+			m_Constants.world = m_World1;
+			m_spConstantBuffer->m_Items[0] = m_Constants.PrepareForBuffer();
+			m_spConstantBuffer->Update();
+			pContext->GetDeviceContext()->DrawIndexed( m_spIndexBuffer->m_Items.size(), 0, 0 );
+
+			m_Constants.world = m_World2;
+			m_spConstantBuffer->m_Items[0] = m_Constants.PrepareForBuffer();
+			m_spConstantBuffer->Update();
+			pContext->GetDeviceContext()->DrawIndexed( m_spIndexBuffer->m_Items.size(), 0, 0 );
+
 		});
 }
 

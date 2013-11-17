@@ -12,10 +12,10 @@ CRenderContext::CRenderContext()
 , m_pDevice(nullptr)
 , m_pImmediateContext(nullptr)
 , m_pRenderTargetView(nullptr)
+, m_pDepthStencil(nullptr)
+, m_pDepthStencilView(nullptr)
 {
 
-	
-	std::shared_ptr<int> ptr;
 }
 
 
@@ -85,7 +85,46 @@ BOOL CRenderContext::Initialize(HWND hWnd, int nWidth, int nHeigth)
 		return FALSE;
 	}
 
-	m_pImmediateContext->OMSetRenderTargets( 1, &m_pRenderTargetView, NULL );
+	
+	D3D11_TEXTURE2D_DESC descDepth = {0};
+
+	descDepth.Width = nWidth;
+	descDepth.Height = nHeigth;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+	
+	hr = m_pDevice->CreateTexture2D( &descDepth, NULL, &m_pDepthStencil );
+
+	if(FAILED(hr))
+	{
+		DXErrors::ReportError(hr);
+		ShutDown();
+		return FALSE;
+	}
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	ZeroMemory( &descDSV, sizeof(descDSV) );
+	descDSV.Format = descDepth.Format;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0;
+
+	hr = m_pDevice->CreateDepthStencilView( m_pDepthStencil, &descDSV, &m_pDepthStencilView );
+
+	if(FAILED(hr))
+	{
+		DXErrors::ReportError(hr);
+		ShutDown();
+		return FALSE;
+	}
+
+	m_pImmediateContext->OMSetRenderTargets( 1, &m_pRenderTargetView, m_pDepthStencilView );
 
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)nWidth;
@@ -124,6 +163,19 @@ void CRenderContext::ShutDown()
 		m_pImmediateContext = nullptr;
 	}
 
+	if(m_pDepthStencilView != nullptr)
+	{
+		m_pDepthStencilView->Release();
+		m_pDepthStencilView = nullptr;
+	}
+
+
+	if(m_pDepthStencil != nullptr)
+	{
+		m_pDepthStencil->Release();
+		m_pDepthStencil = nullptr;
+	}
+
 	if( m_pDevice != nullptr )
 	{
 		m_pDevice->Release();
@@ -146,6 +198,9 @@ void CRenderContext::Render(std::function<void (CRenderContext*)> render)
 	float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
 
 	m_pImmediateContext->ClearRenderTargetView( m_pRenderTargetView, ClearColor );
+
+	m_pImmediateContext->ClearDepthStencilView( m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0 );
+
 
 	render(this);
 
