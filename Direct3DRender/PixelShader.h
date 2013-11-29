@@ -20,7 +20,7 @@ public:
 
 protected:
 
-	ID3D11PixelShader*	m_pPixelShader;;
+	ID3D11PixelShader*	m_pPixelShader;
 
 };
 

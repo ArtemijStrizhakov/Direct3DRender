@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClInclude Include="Direct3DRender.h" />
     <ClInclude Include="DXErrors.h" />
+    <ClInclude Include="GeometryShader.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="RenderContext.h" />
@@ -92,6 +93,7 @@
   <ItemGroup>
     <ClCompile Include="Direct3DRender.cpp" />
     <ClCompile Include="DXErrors.cpp" />
+    <ClCompile Include="GeometryShader.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="RenderContext.cpp" />

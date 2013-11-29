@@ -4,8 +4,6 @@
 
 #include <d3d11.h>
 
-
-
 CRenderContext::CRenderContext()
 : m_hWnd(nullptr)
 , m_pSwapChain(nullptr)
@@ -231,6 +229,18 @@ CVertexShader::Ptr CRenderContext::CreateVertexShader(std::wstring const & shade
 	return shader;
 }
 
+CGeometryShader::Ptr CRenderContext::CreateGeometryShader(std::wstring const & shaderPath)
+{
+	auto shader = std::make_shared<CGeometryShader>();
+
+	if(!shader->Compile(shaderPath, m_pDevice))
+	{
+		return CGeometryShader::Ptr();
+	}
+
+	return shader;
+}
+
 void CRenderContext::SetVertexBuffer( ID3D11Buffer* pBuffer, int nSize )
 {
 	UINT stride = nSize;
@@ -266,6 +276,12 @@ void CRenderContext::SetVertexShader( ID3D11VertexShader* pShader, ID3D11InputLa
 	m_pImmediateContext->IASetInputLayout( pInputLayout );
 
 }
+
+void CRenderContext::SetGeometryShader(ID3D11GeometryShader* pShader)
+{
+	m_pImmediateContext->GSSetShader(pShader, NULL, 0);
+}
+
 
 ID3D11DeviceContext* CRenderContext::GetDeviceContext()
 {

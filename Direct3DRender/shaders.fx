@@ -1,10 +1,4 @@
 //--------------------------------------------------------------------------------------
-// File: Tutorial04.fx
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
-//--------------------------------------------------------------------------------------
-
-//--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
 cbuffer ConstantBuffer : register( b0 )
@@ -14,31 +8,65 @@ cbuffer ConstantBuffer : register( b0 )
 	matrix Projection;
 }
 
-//--------------------------------------------------------------------------------------
-struct VS_OUTPUT
+struct VS_INPUT
 {
-    float4 Pos : SV_POSITION;
-    float4 Color : COLOR0;
+	float4 Pos : SV_POSITION;
 };
+
+struct PS_INPUT
+{
+	float4 Pos : SV_POSITION;
+	float3 Norm : NORMAL;
+};
+
 
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-VS_OUTPUT VS( float4 Pos : POSITION, float4 Color : COLOR )
+PS_INPUT VS( VS_INPUT input )
 {
-    VS_OUTPUT output = (VS_OUTPUT)0;
-    output.Pos = mul( Pos, World );
-    output.Pos = mul( output.Pos, View );
-    output.Pos = mul( output.Pos, Projection );
-    output.Color = Color;
-    return output;
+	PS_INPUT output = (PS_INPUT)0;
+	output.Pos = mul( input.Pos, World );
+	output.Pos = mul( output.Pos, View );
+	output.Pos = mul( output.Pos, Projection );
+	return output;
 }
 
+[maxvertexcount(3)]   // produce a maximum of 3 output vertices
+void GS( triangle PS_INPUT input[3], inout TriangleStream<PS_INPUT> triStream )
+{
+	PS_INPUT psInput;
+
+	float3 faceEdgeA = input[1].Pos - input[0].Pos;
+	float3 faceEdgeB = input[2].Pos - input[0].Pos;
+	float3 faceNormal = normalize( cross(faceEdgeA, faceEdgeB) );
+
+	psInput.Pos = input[0].Pos;
+	psInput.Norm = faceNormal;
+	triStream.Append(psInput);
+
+	psInput.Pos = input[1].Pos;
+	psInput.Norm = faceNormal;
+	triStream.Append(psInput);
+
+	psInput.Pos = input[2].Pos;
+	psInput.Norm = faceNormal;
+	triStream.Append(psInput);
+
+	triStream.RestartStrip();
+}
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PS( VS_OUTPUT input ) : SV_Target
+float4 PS( PS_INPUT input) : SV_Target
 {
-    return input.Color;
+	static float3 vLightDir = float3( 0.0f, 0.0f, -1.0f);
+	static float3 vLightColor = float3( 1.0f, 0.0f, 0.0f);
+
+	float3 finalColor = 0;
+    
+	finalColor += saturate( dot( vLightDir,input.Norm) * vLightColor );
+
+	return float4(finalColor[0], finalColor[1], finalColor[2], 1.0f);
 }

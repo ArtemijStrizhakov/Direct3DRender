@@ -3,6 +3,7 @@
 #include <functional>
 #include "PixelShader.h"
 #include "VertexShader.h"
+#include "GeometryShader.h"
 #include "Buffer.h"
 
 class ID3D11Device;
@@ -23,6 +24,7 @@ public:
 	
 	CPixelShader::Ptr CreatePixelShader(std::wstring const & shaderPath);
 	CVertexShader::Ptr CreateVertexShader(std::wstring const & shaderPath);
+	CGeometryShader::Ptr CreateGeometryShader(std::wstring const & shaderPath);
 	
 	template <class ITEM>
 	typename CBuffer<ITEM>::Ptr CreateBuffer(BufferType type)
@@ -35,6 +37,7 @@ public:
 	void SetConstantBuffer(ID3D11Buffer* pBuffer);
 	void SetPixelShader(ID3D11PixelShader* pShader);
 	void SetVertexShader(ID3D11VertexShader* pShader, ID3D11InputLayout *pInputLayout);
+	void SetGeometryShader(ID3D11GeometryShader* pShader);
 
 	ID3D11DeviceContext* GetDeviceContext();
 

@@ -22,18 +22,20 @@ bool CRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
 	
 	m_spVertexShader = m_RenderContext.CreateVertexShader(L"shaders.fx");
 
+	m_spGeometryShader = m_RenderContext.CreateGeometryShader(L"shaders.fx");
+
 	//////////////////////////////////////////////////////////////////////////
 
 	m_spVertexBuffer = m_RenderContext.CreateBuffer<VERTEX>(VertexBuffer);
 		
-	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) ));
-	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, -1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
-	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) ));
-	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, 1.0f, 1.0f ), XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ));
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, -1.0f, 1.0f ) ) );
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, -1.0f, 1.0f ) ) );
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) ) );
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, 1.0f, 1.0f, 1.0f ) ) );
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, -1.0f, 1.0f ) ) );
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, -1.0f, 1.0f ) ) );
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( 1.0f, -1.0f, 1.0f, 1.0f ) ) );
+	m_spVertexBuffer->m_Items.push_back( VERTEX( XMFLOAT4( -1.0f, -1.0f, 1.0f, 1.0f ) ) );
 	m_spVertexBuffer->Compile();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -53,7 +55,6 @@ bool CRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
 	m_spConstantBuffer = m_RenderContext.CreateBuffer<CONSTANTBUFER>(ConstantBuffer);
 
 	m_World1 = XMMatrixIdentity();
-	m_World2 = XMMatrixIdentity();
 
 	m_Constants.world = m_World1;
 	m_Constants.view = XMMatrixLookAtLH( XMVectorSet( 0.0f, 0.0f, -5.0f, 0.0f ), XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f ), XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ) );
@@ -69,6 +70,7 @@ bool CRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
 void CRender::ShutDown()
 {
 	m_spVertexBuffer.reset();
+	m_spGeometryShader.reset();
 	m_spPixelSader.reset();
 	m_spVertexShader.reset();
 
@@ -80,14 +82,8 @@ void CRender::Render()
 	static float t = 0.0f;
 	t += ( float )XM_PI * 0.0001f;
 
-	m_World1 = XMMatrixRotationY(t);
-
-	XMMATRIX mSpin = XMMatrixRotationZ( -t );
-	XMMATRIX mOrbit = XMMatrixRotationY( -t * 1.0f );
-	XMMATRIX mTranslate = XMMatrixTranslation( -4.0f, 0.0f, 0.0f );
-	XMMATRIX mScale = XMMatrixScaling( 0.3f, 0.3f, 0.3f );
-	m_World2 = mScale * mSpin * mTranslate * mOrbit;
-	
+	m_World1 = XMMatrixRotationY(t)*XMMatrixRotationZ(t);
+		
 	m_RenderContext.Render([this](CRenderContext* pContext)
 		{
 			pContext->SetVertexBuffer(m_spVertexBuffer->GetBuffer(), sizeof( VERTEX ));
@@ -99,6 +95,8 @@ void CRender::Render()
 			pContext->SetPixelShader(m_spPixelSader->GetShader());
 			
 			pContext->SetVertexShader(m_spVertexShader->GetShader(), m_spVertexShader->GetLayout());
+
+			pContext->SetGeometryShader(m_spGeometryShader->GetShader());		
 			
 			pContext->GetDeviceContext()->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
@@ -106,12 +104,7 @@ void CRender::Render()
 			m_spConstantBuffer->m_Items[0] = m_Constants.PrepareForBuffer();
 			m_spConstantBuffer->Update();
 			pContext->GetDeviceContext()->DrawIndexed( m_spIndexBuffer->m_Items.size(), 0, 0 );
-
-			m_Constants.world = m_World2;
-			m_spConstantBuffer->m_Items[0] = m_Constants.PrepareForBuffer();
-			m_spConstantBuffer->Update();
-			pContext->GetDeviceContext()->DrawIndexed( m_spIndexBuffer->m_Items.size(), 0, 0 );
-
+				
 		});
 }
 

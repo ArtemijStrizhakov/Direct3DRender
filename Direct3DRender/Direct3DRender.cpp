@@ -5,6 +5,8 @@
 #include "Direct3DRender.h"
 #include <objbase.h>
 #include "Render.h"
+#include <string>
+#include <sstream>
 
 #define MAX_LOADSTRING 100
 
@@ -50,6 +52,15 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DIRECT3DRENDER));
 
+	LARGE_INTEGER frequency;        // ticks per second
+	LARGE_INTEGER t1, t2;           // ticks
+	double elapsedTime;
+
+	// get ticks per second
+	QueryPerformanceFrequency(&frequency);
+
+	int nIterations = 0;
+
 	// Main message loop:
 	{
 		g_Render.Initialize(hWnd, 800, 600);
@@ -66,7 +77,20 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			}
 			else
 			{
-				g_Render.Render();  // Do some rendering
+				nIterations++;
+
+				QueryPerformanceCounter(&t1);
+				g_Render.Render();
+				QueryPerformanceCounter(&t2);
+
+				if(nIterations == 1000)
+				{
+					nIterations = 0;
+					double fps =  frequency.QuadPart / (t2.QuadPart - t1.QuadPart);
+					std::wostringstream oss;
+					oss << L"Direct3DRender FPS: " << fps;
+					SetWindowTextW(hWnd, oss.str().c_str());
+				}
 			}
 		}
 

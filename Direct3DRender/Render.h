@@ -6,15 +6,15 @@
 
 struct VERTEX
 {
-	VERTEX(XMFLOAT4 p, XMFLOAT4 c)
+
+	VERTEX(XMFLOAT4 p)
 		: position(p)
-		, color(c)
+		
 	{
 
 	}
 
 	XMFLOAT4 position;
-	XMFLOAT4 color;
 };
 
 struct CONSTANTBUFER
@@ -49,16 +49,17 @@ public:
 protected:
 
 	CRenderContext m_RenderContext;
+	
 	CPixelShader::Ptr m_spPixelSader;
 	CVertexShader::Ptr m_spVertexShader;
+	CGeometryShader::Ptr m_spGeometryShader;
+	
 	CBuffer<VERTEX>::Ptr m_spVertexBuffer;
 	CBuffer<WORD>::Ptr m_spIndexBuffer;
 	CBuffer<CONSTANTBUFER>::Ptr m_spConstantBuffer;
 
 	CONSTANTBUFER m_Constants;
 	XMMATRIX m_World1;
-	XMMATRIX m_World2;
-
 
 };
 
