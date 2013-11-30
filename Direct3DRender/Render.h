@@ -6,6 +6,11 @@
 
 struct VERTEX
 {
+	VERTEX()
+	{
+		position = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	}
+
 
 	VERTEX(XMFLOAT4 p)
 		: position(p)
@@ -13,7 +18,7 @@ struct VERTEX
 	{
 
 	}
-
+	
 	XMFLOAT4 position;
 };
 
@@ -47,6 +52,8 @@ public:
 	void Render();
 
 protected:
+
+	void GenerateGrid(int nXCount, int nYCount, std::vector<VERTEX>& vertices, std::vector<WORD>& triangleIndexes);
 
 	CRenderContext m_RenderContext;
 	
