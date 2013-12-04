@@ -11,6 +11,12 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{6ee5fad8-7b35-420b-aace-cf055f8cd142}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MarchingCubes">
+      <UniqueIdentifier>{09a10f73-3a15-46a9-b538-898fe054932f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FractalRender">
+      <UniqueIdentifier>{d2023e09-01ca-47f0-bbb5-002305999cff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Direct3DRender.h">
@@ -25,7 +31,6 @@
     <ClInclude Include="targetver.h">
       <Filter>GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Render.h" />
     <ClInclude Include="DXErrors.h" />
     <ClInclude Include="PixelShader.h">
       <Filter>Shaders</Filter>
@@ -41,6 +46,13 @@
     <ClInclude Include="GeometryShader.h">
       <Filter>Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="MarchingCubes.h">
+      <Filter>MarchingCubes</Filter>
+    </ClInclude>
+    <ClInclude Include="FractalRender.h">
+      <Filter>FractalRender</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSurfaceRender.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Direct3DRender.cpp">
@@ -49,7 +61,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Render.cpp" />
     <ClCompile Include="DXErrors.cpp" />
     <ClCompile Include="PixelShader.cpp">
       <Filter>Shaders</Filter>
@@ -64,6 +75,13 @@
     <ClCompile Include="GeometryShader.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="MarchingCubes.cpp">
+      <Filter>MarchingCubes</Filter>
+    </ClCompile>
+    <ClCompile Include="FractalRender.cpp">
+      <Filter>FractalRender</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSurfaceRender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Direct3DRender.rc">
@@ -79,6 +97,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="shaders.fx" />
+    <FxCompile Include="FractalRender.fx" />
+    <FxCompile Include="IsoSurface.fx" />
   </ItemGroup>
 </Project>

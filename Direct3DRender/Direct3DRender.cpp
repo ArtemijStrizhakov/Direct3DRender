@@ -4,13 +4,15 @@
 #include "stdafx.h"
 #include "Direct3DRender.h"
 #include <objbase.h>
-#include "Render.h"
+#include "FractalRender.h"
+#include "IsoSurfaceRender.h"
 #include <string>
 #include <sstream>
 
 #define MAX_LOADSTRING 100
 
-CRender g_Render;
+//CFractalRender g_Render;
+CIsoSurfaceRender g_Render;
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -83,7 +85,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 				g_Render.Render();
 				QueryPerformanceCounter(&t2);
 
-				if(nIterations == 1000)
+				if(nIterations == 10)
 				{
 					nIterations = 0;
 					double fps =  frequency.QuadPart / (t2.QuadPart - t1.QuadPart);

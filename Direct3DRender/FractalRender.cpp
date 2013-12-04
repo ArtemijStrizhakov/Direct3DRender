@@ -1,20 +1,20 @@
 #include "stdafx.h"
-#include "Render.h"
+#include "FractalRender.h"
 #include <xnamath.h>
 
 
-CRender::CRender()
+CFractalRender::CFractalRender()
 {
 
 }
 
 
-CRender::~CRender()
+CFractalRender::~CFractalRender()
 {
 
 }
 
-void CRender::GenerateGrid( int nXCount, int nYCount, std::vector<VERTEX>& vertices, std::vector<WORD>& triangleIndexes )
+void CFractalRender::GenerateGrid( int nXCount, int nYCount, std::vector<VERTEX>& vertices, std::vector<WORD>& triangleIndexes )
 {
 	float startX = -1.0f;
 	float startY = -1.0f;
@@ -67,15 +67,15 @@ void CRender::GenerateGrid( int nXCount, int nYCount, std::vector<VERTEX>& verti
 
 }
 
-bool CRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
+bool CFractalRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
 {
 	m_RenderContext.Initialize(hWnd, nWidth, nHeigth);
 	
-	m_spPixelSader = m_RenderContext.CreatePixelShader(L"shaders.fx");
+	m_spPixelSader = m_RenderContext.CreatePixelShader(L"FractalRender.fx");
 	
-	m_spVertexShader = m_RenderContext.CreateVertexShader(L"shaders.fx");
+	m_spVertexShader = m_RenderContext.CreateVertexShader(L"FractalRender.fx");
 
-	m_spGeometryShader = m_RenderContext.CreateGeometryShader(L"shaders.fx");
+	m_spGeometryShader = m_RenderContext.CreateGeometryShader(L"FractalRender.fx");
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -108,7 +108,7 @@ bool CRender::Initialize( HWND hWnd, int nWidth, int nHeigth )
 	return true;
 }
 
-void CRender::ShutDown()
+void CFractalRender::ShutDown()
 {
 	m_spVertexBuffer.reset();
 	m_spGeometryShader.reset();
@@ -118,7 +118,7 @@ void CRender::ShutDown()
 	m_RenderContext.ShutDown();
 }
 
-void CRender::Render()
+void CFractalRender::Render()
 {
 	static float t = 0.0f;
 	t += ( float )XM_PI * 0.001f;

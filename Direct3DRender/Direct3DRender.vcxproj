@@ -80,8 +80,10 @@
     <ClInclude Include="Direct3DRender.h" />
     <ClInclude Include="DXErrors.h" />
     <ClInclude Include="GeometryShader.h" />
+    <ClInclude Include="IsoSurfaceRender.h" />
+    <ClInclude Include="MarchingCubes.h" />
     <ClInclude Include="PixelShader.h" />
-    <ClInclude Include="Render.h" />
+    <ClInclude Include="FractalRender.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShaderUtils.h" />
@@ -94,8 +96,10 @@
     <ClCompile Include="Direct3DRender.cpp" />
     <ClCompile Include="DXErrors.cpp" />
     <ClCompile Include="GeometryShader.cpp" />
+    <ClCompile Include="IsoSurfaceRender.cpp" />
+    <ClCompile Include="MarchingCubes.cpp" />
     <ClCompile Include="PixelShader.cpp" />
-    <ClCompile Include="Render.cpp" />
+    <ClCompile Include="FractalRender.cpp" />
     <ClCompile Include="RenderContext.cpp" />
     <ClCompile Include="ShaderUtils.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -112,7 +116,11 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="shaders.fx">
+    <FxCompile Include="FractalRender.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="IsoSurface.fx">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.1</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
