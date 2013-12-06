@@ -443,8 +443,13 @@ namespace MarchingCubes
 		
 		for (int i=0; triTable[cubeindex][i] != -1; i += 3) 
 		{
-			for(int j = 0; j < 3; j++)
+			//for(int j = 0; j < 3; j++)
 			{
+				int j = 1;
+				vertex(vertlist[triTable[cubeindex][i + j]].x, vertlist[triTable[cubeindex][i + j]].y, vertlist[triTable[cubeindex][i + j]].z);
+				j = 0;
+				vertex(vertlist[triTable[cubeindex][i + j]].x, vertlist[triTable[cubeindex][i + j]].y, vertlist[triTable[cubeindex][i + j]].z);
+				j = 2;
 				vertex(vertlist[triTable[cubeindex][i + j]].x, vertlist[triTable[cubeindex][i + j]].y, vertlist[triTable[cubeindex][i + j]].z);
 			}
 		}

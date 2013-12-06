@@ -131,7 +131,7 @@ void CFractalRender::Render()
 		
 			pContext->SetIndexBuffer(m_spIndexBuffer->GetBuffer());
 			
-			pContext->SetConstantBuffer(m_spConstantBuffer->GetBuffer());
+			pContext->SetVertexShaderConstantBuffer(m_spConstantBuffer->GetBuffer());
 
 			pContext->SetPixelShader(m_spPixelSader->GetShader());
 			

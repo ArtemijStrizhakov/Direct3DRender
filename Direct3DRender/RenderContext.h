@@ -34,7 +34,9 @@ public:
 
 	void SetVertexBuffer(ID3D11Buffer* pBuffer, int nSize);
 	void SetIndexBuffer(ID3D11Buffer* pBuffer);
-	void SetConstantBuffer(ID3D11Buffer* pBuffer);
+	void SetVertexShaderConstantBuffer(ID3D11Buffer* pBuffer);
+	void SetGeometryShaderConstantBuffer(ID3D11Buffer* pBuffer);
+	void SetPixelShaderConstantBuffer(ID3D11Buffer* pBuffer);
 	void SetPixelShader(ID3D11PixelShader* pShader);
 	void SetVertexShader(ID3D11VertexShader* pShader, ID3D11InputLayout *pInputLayout);
 	void SetGeometryShader(ID3D11GeometryShader* pShader);

@@ -53,7 +53,7 @@ public:
 
 protected:
 
-	void PoligonizeField(int nCells, CBuffer<ISO_VERTEX>::Ptr spVertexBuffer);
+	void CreateSampligGrid(int nCells, CBuffer<ISO_VERTEX>::Ptr spVertexBuffer);
 
 	CRenderContext m_RenderContext;
 

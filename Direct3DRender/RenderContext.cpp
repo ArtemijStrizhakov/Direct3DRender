@@ -257,13 +257,30 @@ void CRenderContext::SetIndexBuffer( ID3D11Buffer* pBuffer )
 	m_pImmediateContext->IASetIndexBuffer( pBuffer, DXGI_FORMAT_R16_UINT, 0 );
 }
 
-void CRenderContext::SetConstantBuffer( ID3D11Buffer* pBuffer )
+void CRenderContext::SetVertexShaderConstantBuffer( ID3D11Buffer* pBuffer )
 {
 	std::vector<ID3D11Buffer*> buffers;
 	buffers.push_back(pBuffer);
 	ID3D11Buffer *const * ppBuffers = (ID3D11Buffer *const *)buffers.data(); 
 	m_pImmediateContext->VSSetConstantBuffers( 0, 1, ppBuffers );
 }
+
+void CRenderContext::SetGeometryShaderConstantBuffer(ID3D11Buffer* pBuffer)
+{
+	std::vector<ID3D11Buffer*> buffers;
+	buffers.push_back(pBuffer);
+	ID3D11Buffer *const * ppBuffers = (ID3D11Buffer *const *)buffers.data(); 
+	m_pImmediateContext->GSSetConstantBuffers( 0, 1, ppBuffers );
+}
+
+void CRenderContext::SetPixelShaderConstantBuffer(ID3D11Buffer* pBuffer)
+{
+	std::vector<ID3D11Buffer*> buffers;
+	buffers.push_back(pBuffer);
+	ID3D11Buffer *const * ppBuffers = (ID3D11Buffer *const *)buffers.data(); 
+	m_pImmediateContext->PSSetConstantBuffers( 0, 1, ppBuffers );
+}
+
 
 void CRenderContext::SetPixelShader( ID3D11PixelShader* pShader )
 {
